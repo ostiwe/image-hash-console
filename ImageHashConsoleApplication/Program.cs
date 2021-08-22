@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace ImageHashConsoleApplication
+﻿namespace ImageHashConsoleApplication
 {
-   using System;
+    using System;
     using System.Globalization;
     using System.IO;
     using CoenM.ImageHash.HashAlgorithms;
