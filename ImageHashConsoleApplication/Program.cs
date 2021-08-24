@@ -32,7 +32,12 @@ namespace ImageHashConsoleApplication
                     var pathAttribute = File.GetAttributes(args[1]);
                     if ((pathAttribute & FileAttributes.Directory) == FileAttributes.Directory)
                     {
-                        var onlyHash = (args[2] != null & args[2] == "--only-hash");
+                        var onlyHash = false;
+                        if (args.Length > 2)
+                        {
+                            onlyHash = (args[2] != null & args[2] == "--only-hash");
+                        }
+                       
                         HashImagesInDirectory(args[1], onlyHash);
 
                         return;
