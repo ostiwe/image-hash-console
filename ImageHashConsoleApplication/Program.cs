@@ -1,11 +1,11 @@
-﻿namespace ImageHashConsoleApplication
-{
-    using System;
-    using System.Globalization;
-    using System.IO;
-    using CoenM.ImageHash.HashAlgorithms;
-    using CoenM.ImageHash;
+﻿using System;
+using System.Globalization;
+using System.IO;
+using CoenM.ImageHash;
+using CoenM.ImageHash.HashAlgorithms;
 
+namespace ImageHashConsoleApplication
+{
     class Program
     {
         static void Main(string[] args)
@@ -13,7 +13,8 @@
             if (args.Length == 0)
             {
                 Console.WriteLine(
-                    "One parameter is missing, action need. use: hash {imagePath} | compare {hashOne} {hashTwo}");
+                    "One parameter is missing, action need. use: hash {imagePath} | hash {pathImagesDir} | compare {hashOne} {hashTwo}"
+                );
 
                 return;
             }
@@ -25,14 +26,22 @@
                     return;
                 case "hash":
                 {
-                    var hash = HashImage(args[1]);
+                    var pathAttribute = File.GetAttributes(args[1]);
+                    if ((pathAttribute & FileAttributes.Directory) == FileAttributes.Directory)
+                    {
+                        HashImagesInDirectory(args[1]);
 
+                        return;
+                    }
+
+                    var hash = HashImage(args[1]);
                     Console.WriteLine(hash);
 
                     return;
                 }
                 case "compare" when args[1] == null || args[2] == null:
                     Console.WriteLine("You must provide to images hash: compare {hashOne} {hashTwo}");
+
                     return;
                 case "compare":
                 {
@@ -47,7 +56,27 @@
                 }
                 default:
                     Console.WriteLine("Command not found");
+
                     break;
+            }
+        }
+
+        private static void HashImagesInDirectory(string pathToDirectory)
+        {
+            var filesToHash = Directory.GetFiles(pathToDirectory);
+            foreach (var fileToHash in filesToHash)
+            {
+                var fileAttribute = File.GetAttributes(fileToHash);
+
+                if ((fileAttribute & FileAttributes.Directory) == FileAttributes.Directory)
+                {
+                    Console.WriteLine(fileToHash + " is directory, skipping");
+
+                    continue;
+                }
+
+                var hash = HashImage(fileToHash);
+                Console.WriteLine("Hash for file: " + fileToHash + " hash: " + hash);
             }
         }
 
