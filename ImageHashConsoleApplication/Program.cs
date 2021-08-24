@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 using CoenM.ImageHash;
 using CoenM.ImageHash.HashAlgorithms;
 
@@ -8,6 +10,8 @@ namespace ImageHashConsoleApplication
 {
     class Program
     {
+        static Semaphore sem = new(25, 25);
+
         static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -64,6 +68,9 @@ namespace ImageHashConsoleApplication
         private static void HashImagesInDirectory(string pathToDirectory)
         {
             var filesToHash = Directory.GetFiles(pathToDirectory);
+            var index = 0;
+            var maxThreads = filesToHash.Length + 1;
+            Thread[] threads = new Thread[maxThreads];
             foreach (var fileToHash in filesToHash)
             {
                 var fileAttribute = File.GetAttributes(fileToHash);
@@ -75,8 +82,16 @@ namespace ImageHashConsoleApplication
                     continue;
                 }
 
-                var hash = HashImage(fileToHash);
-                Console.WriteLine("Hash for file: " + fileToHash + " hash: " + hash);
+                
+                threads[index] = new Thread(() =>
+                {
+                    sem.WaitOne();
+                    var hash = HashImage(fileToHash);
+                    Console.WriteLine("Calculated perceptual hash for file: " + fileToHash + " hash: " + hash);
+                    sem.Release();
+                });
+                threads[index].Start();
+                index++;
             }
         }
 
