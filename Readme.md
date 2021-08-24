@@ -22,7 +22,7 @@ $ ./ImageHashConsoleApplication hash /path/to/image/directory
 Result:
 
 ```shell
-./ImageHashConsoleApplication hash ~/Downloads/imagesS --only-hash
+./ImageHashConsoleApplication hash ~/Downloads/imagesS
 Calculated perceptual hash for file: /home/ostiwe/Downloads/imagesS/ishan-seefromthesky-DtWyp_4YEes-unsplash.jpg hash: 10333678333505845673
 Calculated perceptual hash for file: /home/ostiwe/Downloads/imagesS/guille-pozzi-PO0UHx-5mHo-unsplash.jpg hash: 12992123694817588148
 Calculated perceptual hash for file: /home/ostiwe/Downloads/imagesS/james-wheeler-XuAxyq0uRT0-unsplash.jpg hash: 17014150402375529576
