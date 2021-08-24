@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Threading;
@@ -33,7 +32,8 @@ namespace ImageHashConsoleApplication
                     var pathAttribute = File.GetAttributes(args[1]);
                     if ((pathAttribute & FileAttributes.Directory) == FileAttributes.Directory)
                     {
-                        HashImagesInDirectory(args[1]);
+                        var onlyHash = (args[2] != null & args[2] == "--only-hash");
+                        HashImagesInDirectory(args[1], onlyHash);
 
                         return;
                     }
@@ -65,7 +65,7 @@ namespace ImageHashConsoleApplication
             }
         }
 
-        private static void HashImagesInDirectory(string pathToDirectory)
+        private static void HashImagesInDirectory(string pathToDirectory, bool onlyHashOption = false)
         {
             var filesToHash = Directory.GetFiles(pathToDirectory);
             var index = 0;
@@ -82,12 +82,19 @@ namespace ImageHashConsoleApplication
                     continue;
                 }
 
-                
                 threads[index] = new Thread(() =>
                 {
                     sem.WaitOne();
                     var hash = HashImage(fileToHash);
-                    Console.WriteLine("Calculated perceptual hash for file: " + fileToHash + " hash: " + hash);
+                    if (onlyHashOption)
+                    {
+                        Console.WriteLine(hash);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Calculated perceptual hash for file: " + fileToHash + " hash: " + hash);
+                    }
+
                     sem.Release();
                 });
                 threads[index].Start();
